@@ -29,13 +29,13 @@ class ProductTemplate(models.Model):
 
     @api.depends("product_variant_ids", "product_variant_ids.refurbish_product_id")
     def _compute_refurbish_product(self):
-        unique_variants = self.filtered(
-            lambda template: len(template.product_variant_ids) == 1
-        )
-        for template in unique_variants:
-            template.refurbish_product_id = (
-                template.product_variant_ids.refurbish_product_id
-            )
+        for template in self:
+            if len(template.product_variant_ids) == 1:
+                template.refurbish_product_id = (
+                    template.product_variant_ids.refurbish_product_id
+                )
+            else:
+                template.refurbish_product_id = False
 
     def _inverse_refurbish_product(self):
         for rec in self:
